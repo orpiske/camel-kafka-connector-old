@@ -27,18 +27,20 @@ import java.util.Properties;
 /**
  * Creates the set of properties used by a Camel JMS Sink Connector
  */
-class CamelJMSPropertyFactory implements ConnectorPropertyFactory {
+public class CamelJMSPropertyFactory implements ConnectorPropertyFactory {
     private final int tasksMax;
     private final String topic;
     private final String queue;
+    private final String connectionFactory;
 
-    private final String brokerURL;
+    protected final String brokerURL;
 
-    CamelJMSPropertyFactory(int tasksMax, String topic, String queue, String brokerURL) {
+    public CamelJMSPropertyFactory(int tasksMax, String topic, String queue, String brokerURL, String connectionFactory) {
         this.tasksMax = tasksMax;
         this.topic = topic;
         this.queue = queue;
         this.brokerURL = brokerURL;
+        this.connectionFactory = connectionFactory;
     }
 
     @Override
@@ -53,7 +55,7 @@ class CamelJMSPropertyFactory implements ConnectorPropertyFactory {
         connectorProps.put("camel.sink.url", "sjms2://queue:" + queue);
         connectorProps.put("topics", topic);
 
-        connectorProps.put("camel.component.sjms2.connection-factory", "#class:org.apache.activemq.ActiveMQConnectionFactory");
+        connectorProps.put("camel.component.sjms2.connection-factory", "#class:" + connectionFactory);
         connectorProps.put("camel.component.sjms2.connection-factory.brokerURL", brokerURL);
 
         return connectorProps;

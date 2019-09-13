@@ -46,7 +46,7 @@ import static org.junit.Assert.fail;
  * A simple test case that checks whether the timer produces the expected number of
  * messages
  */
-public class CamelSinkJMSITCase {
+public abstract class CamelSinkJMSITCase {
     private static final Logger log = LoggerFactory.getLogger(CamelSinkJMSITCase.class);
 
     @Rule
@@ -58,21 +58,29 @@ public class CamelSinkJMSITCase {
     private int received = 0;
     private final int expect = 10;
     private KafkaConnectRunner kafkaConnectRunner;
+    private JMSClient jmsClient;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         ContainerUtil.waitForInitialization(kafka);
         log.info("Kafka bootstrap server running at address {}", kafka.getBootstrapServers());
 
         ContainerUtil.waitForInitialization(artemis);
         log.info("Artemis broker running at {}", artemis.getAdminURL());
 
-        ConnectorPropertyFactory testProperties = new CamelJMSPropertyFactory(1,
-                TestCommon.DEFAULT_TEST_TOPIC, TestCommon.DEFAULT_JMS_QUEUE, artemis.getDefaultAcceptorEndpoint());
+        ConnectorPropertyFactory testProperties = getConnectorPropertyFactory();
 
         kafkaConnectRunner =  new KafkaConnectRunner(kafka.getBootstrapServers());
         kafkaConnectRunner.getConnectorPropertyProducers().add(testProperties);
+
+        jmsClient = getJmsClient();
+
+        jmsClient.start();
     }
+
+    protected abstract JMSClient getJmsClient();
+
+    protected abstract ConnectorPropertyFactory getConnectorPropertyFactory();
 
     private boolean checkRecord(Message jmsMessage) {
         if (jmsMessage instanceof TextMessage) {
@@ -96,7 +104,7 @@ public class CamelSinkJMSITCase {
     }
 
     @Test
-    public void testBasicSendReceive() {
+    public void runTestBasicSendReceive() {
         try {
             CountDownLatch latch = new CountDownLatch(1);
 
@@ -131,15 +139,7 @@ public class CamelSinkJMSITCase {
     }
 
     private void consumeJMSMessages(CountDownLatch latch) {
-        JMSClient jmsClient = null;
-
         try {
-            jmsClient = new JMSClient(org.apache.activemq.ActiveMQConnectionFactory::new,
-                    org.apache.activemq.command.ActiveMQQueue::new,
-                    artemis.getOpenwireEndpoint());
-
-            jmsClient.start();
-
             for (int i = 0; i < expect; i++) {
                 jmsClient.receive(TestCommon.DEFAULT_JMS_QUEUE, this::checkRecord);
             }

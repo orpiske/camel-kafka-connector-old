@@ -59,7 +59,7 @@ public class ArtemisContainer extends GenericContainer {
      * @return the end point URL as a string
      */
     public String getAMQPEndpoint() {
-        return String.format("tcp://localhost:%d", getAMQPPort());
+        return String.format("amqp://localhost:%d", getAMQPPort());
     }
 
 
