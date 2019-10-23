@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.PollingConsumer;
+import org.apache.camel.component.aws.sqs.SqsConfiguration;
 import org.apache.camel.kafkaconnector.utils.CamelMainSupport;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.errors.ConnectException;
@@ -58,6 +59,8 @@ public class CamelSourceTask extends SourceTask {
 
     @Override
     public void start(Map<String, String> props) {
+        SqsConfiguration
+
         try {
             LOG.info("Starting CamelSourceTask connector task");
             config = new CamelSourceConnectorConfig(props);
