@@ -59,7 +59,6 @@ public class CamelSourceTask extends SourceTask {
 
     @Override
     public void start(Map<String, String> props) {
-        SqsConfiguration
 
         try {
             LOG.info("Starting CamelSourceTask connector task");
