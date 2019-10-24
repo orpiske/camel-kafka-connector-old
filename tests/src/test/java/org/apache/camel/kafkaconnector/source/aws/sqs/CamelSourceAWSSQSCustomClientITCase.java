@@ -82,7 +82,7 @@ public class CamelSourceAWSSQSCustomClientITCase {
         properties.put(AWSConfigs.SECRET_KEY, credentials.getAWSSecretKey());
         properties.put(AWSConfigs.REGION, Regions.US_EAST_1.name());
 
-        ConnectorPropertyFactory testProperties = new CamelAWSSQSPropertyFactory(1,
+        ConnectorPropertyFactory testProperties = new CamelAWSSQSCustomClientPropertyFactory(1,
                 TestCommon.DEFAULT_TEST_TOPIC, TestCommon.DEFAULT_SQS_QUEUE, properties);
 
         kafkaConnectRunner =  new KafkaConnectRunner(kafka.getBootstrapServers());
