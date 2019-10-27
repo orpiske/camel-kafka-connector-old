@@ -41,10 +41,6 @@ class CamelAWSSQSCustomClientPropertyFactory implements ConnectorPropertyFactory
         this.amazonConfigs = amazonConfigs;
     }
 
-    /*
-    camel.component.aws-sqs.connection-factory=#class:org.apache.activemq.ActiveMQConnectionFactory
-    camel.component.sjms2.connection-factory.brokerURL=tcp://localhost:61616
-     */
 
     @Override
     public Properties getProperties() {

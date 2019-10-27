@@ -56,7 +56,6 @@ class CamelAWSSQSPropertyFactory implements ConnectorPropertyFactory {
                 + amazonConfigs.getProperty(AWSConfigs.AMAZON_AWS_HOST, "localhost");
         connectorProps.put("camel.source.url", queueUrl);
 
-
         connectorProps.put("camel.component.aws-sqs.configuration.access-key",
                 amazonConfigs.getProperty(AWSConfigs.ACCESS_KEY, ""));
         connectorProps.put("camel.component.aws-sqs.configuration.secret-key",
