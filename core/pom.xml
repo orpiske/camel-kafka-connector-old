@@ -81,6 +81,10 @@
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-http</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-elasticsearch-rest</artifactId>
+        </dependency>
 
         <!-- Kafka -->
         <dependency>

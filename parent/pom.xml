@@ -148,6 +148,13 @@
                 <artifactId>camel-http</artifactId>
                 <version>${camel.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-elasticsearch-rest</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-cbor</artifactId>
@@ -231,6 +238,12 @@
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>localstack</artifactId>
+                <version>${version.testcontainers}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>elasticsearch</artifactId>
                 <version>${version.testcontainers}</version>
                 <scope>test</scope>
             </dependency>
