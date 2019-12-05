@@ -43,13 +43,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import static org.junit.Assert.fail;
 
 public class CamelSinkElasticSearchITCase {
     private static final Logger LOG = LoggerFactory.getLogger(CamelElasticSearchPropertyFactory.class);
+    // This is required in order to use the Open Source one by default
+    private static final String ELASTIC_SEARCH_CONTAINER = "docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.1";
 
     private static final int ELASTIC_SEARCH_PORT = 9200;
 
@@ -57,11 +58,11 @@ public class CamelSinkElasticSearchITCase {
     public KafkaContainer kafka = new KafkaContainer().withEmbeddedZookeeper();
 
     @Rule
-    public ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
+    public ElasticsearchContainer elasticsearch = new ElasticsearchContainer(ELASTIC_SEARCH_CONTAINER);
 
     private KafkaConnectRunner kafkaConnectRunner;
 
-    private final int expect = 1;
+    private final int expect = 10;
 
 
     @Before
@@ -89,6 +90,7 @@ public class CamelSinkElasticSearchITCase {
 
         for (int i = 0; i < expect; i++) {
             try {
+                System.out.println("sending data ... ");
                 kafkaClient.produce(TestCommon.DEFAULT_TEST_TOPIC, "test");
             } catch (ExecutionException e) {
                 LOG.error("Unable to produce messages: {}", e.getMessage(), e);
@@ -109,7 +111,9 @@ public class CamelSinkElasticSearchITCase {
             latch.await();
             putRecords();
 
-            LOG.debug("Created the consumer ... About to receive messages");
+            Thread.sleep(30000);
+
+                LOG.debug("Created the consumer ... About to receive messages");
         } catch (Exception e) {
             LOG.error("HTTP test failed: {}", e.getMessage(), e);
             fail(e.getMessage());

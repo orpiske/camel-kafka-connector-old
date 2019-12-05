@@ -46,7 +46,11 @@ public class CamelElasticSearchPropertyFactory implements ConnectorPropertyFacto
         connectorProps.put(ConnectorConfig.KEY_CONVERTER_CLASS_CONFIG, "org.apache.kafka.connect.storage.StringConverter");
         connectorProps.put(ConnectorConfig.VALUE_CONVERTER_CLASS_CONFIG, "org.apache.kafka.connect.storage.StringConverter");
 
-        String queueUrl = "elasticsearch-rest://" + clusterName + "?hostAddresses=" + hostAddress + "&indexName=ckc-index";
+        String queueUrl = "elasticsearch-rest://" + clusterName + "?hostAddresses=" + hostAddress
+                + "&operation=Index"
+                + "&indexName=ckc-index";
+//                + "&indexType=_doc";
+
 
         connectorProps.put("camel.sink.url", queueUrl);
         connectorProps.put("topics", topic);
