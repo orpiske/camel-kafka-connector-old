@@ -92,6 +92,7 @@ public class CamelSourceAWSS3ITCase {
 
                 .build();
 
+        awsS3Client.createBucket(TestCommon.DEFAULT_S3_BUCKET);
     }
 
     private boolean checkRecord(ConsumerRecord<String, String> record) {
@@ -107,27 +108,29 @@ public class CamelSourceAWSS3ITCase {
 
     @Test(timeout = 180000)
     public void testBasicSendReceive() {
-        ExecutorService service = Executors.newCachedThreadPool();
-        service.submit(() -> kafkaConnectRunner.run());
+        try {
+            ExecutorService service = Executors.newCachedThreadPool();
+            service.submit(() -> kafkaConnectRunner.run());
 
-        awsS3Client.createBucket(TestCommon.DEFAULT_S3_BUCKET);
+            LOG.debug("Putting S3 objects");
+            for (int i = 0; i < expect; i++) {
+                String name = "file" + i + ".test";
+                String file = this.getClass().getResource(name).getFile();
 
-        LOG.debug("Putting S3 objects");
-        for (int i = 0; i < expect; i++) {
-            String name = "file" + i + ".test";
-            String file = this.getClass().getResource(name).getFile();
+                LOG.trace("Putting file " + file);
+                awsS3Client.putObject(TestCommon.DEFAULT_S3_BUCKET, name, new File(file));
+            }
+            LOG.debug("Done putting S3S objects");
 
-            LOG.trace("Putting file " + file);
-            awsS3Client.putObject(TestCommon.DEFAULT_S3_BUCKET, name, new File(file));
+            LOG.debug("Creating the consumer ...");
+            KafkaClient<String, String> kafkaClient = new KafkaClient<>(kafka.getBootstrapServers());
+            kafkaClient.consume(TestCommon.DEFAULT_TEST_TOPIC, this::checkRecord);
+            LOG.debug("Created the consumer ...");
+
+            Assert.assertTrue("Didn't process the expected amount of messages", received == expect);
         }
-        LOG.debug("Done putting S3S objects");
-
-        LOG.debug("Creating the consumer ...");
-        KafkaClient<String, String> kafkaClient = new KafkaClient<>(kafka.getBootstrapServers());
-        kafkaClient.consume(TestCommon.DEFAULT_TEST_TOPIC, this::checkRecord);
-        LOG.debug("Created the consumer ...");
-
-        kafkaConnectRunner.stop();
-        Assert.assertTrue("Didn't process the expected amount of messages", received == expect);
+        finally {
+            kafkaConnectRunner.stop();
+        }
     }
 }
